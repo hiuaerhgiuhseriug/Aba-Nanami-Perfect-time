@@ -4,6 +4,75 @@ local runService = game:GetService('RunService')
 local connection
 local alreadyFired = false
 
+local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "EvilTwinUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.fromScale(0.5, 0.15)
+frame.Position = UDim2.fromScale(0.5, 0.5)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
+frame.BorderSizePixel = 3
+frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+frame.ZIndex = 10
+frame.Parent = screenGui
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 1, 0)
+label.BackgroundTransparency = 1
+label.TextScaled = true
+label.Font = Enum.Font.SpecialElite
+label.Text = "MADE BY KINGVONLOVER69"
+label.TextColor3 = Color3.fromRGB(255, 0, 100)
+label.ZIndex = 11
+label.Parent = frame
+
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://9118823101"
+sound.Volume = 4
+sound.Parent = SoundService
+sound:Play()
+
+task.spawn(function()
+	for i = 1, 60 do
+		frame.Rotation = math.random(-30, 30)
+		frame.BackgroundColor3 = Color3.fromRGB(math.random(0,255), 0, math.random(100,255))
+		label.TextColor3 = Color3.fromRGB(math.random(255), math.random(255), math.random(255))
+		frame.Size = UDim2.fromScale(0.4 + math.random()*0.3, 0.1 + math.random()*0.1)
+		wait(0.05)
+	end
+end)
+
+-- Final Snap to Center + Fade Out
+task.delay(3.5, function()
+	local centerTween = TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(0.5, 0.15),
+		Rotation = 0
+	})
+	local fadeText = TweenService:Create(label, TweenInfo.new(0.8), {TextTransparency = 1})
+	local fadeBG = TweenService:Create(frame, TweenInfo.new(0.8), {BackgroundTransparency = 1})
+
+	centerTween:Play()
+	centerTween.Completed:Wait()
+
+	fadeText:Play()
+	fadeBG:Play()
+	sound:Destroy()
+
+	task.wait(1)
+	screenGui:Destroy()
+end)
+
+print("Hello this is working")
+
 local function BLACKFLASH()
     local character = player.Character
     if not character then

@@ -8,6 +8,58 @@ local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
 local playerGui = player:WaitForChild("PlayerGui")
 
+local TextChatService = game:GetService('TextChatService')
+local UserInputService = game:GetService('UserInputService')
+local channel = TextChatService:WaitForChild('TextChannels')
+    :WaitForChild('RBXGeneral')
+
+local nanamiPhrases = {
+    'AVG 9-5 WORKER AFTER COMING HOME TO HIS WIFE.',
+    "Time the clock in.",
+    "Dude I'm gonna bash your head in.",
+    "Yo mutt hold this 4 stock 💔💔💔",
+    'RUN MY FADE CUH 😍😍😍😍',
+    'When it comes to skill and timing, heh.',
+    'BLACK FLASH ONE COMBO, DARK TRIAD COMBO TIME.',
+}
+
+local cooldown = 25 
+local lastUsed = 0
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.G then
+        local currentTime = tick()
+
+        if currentTime - lastUsed < cooldown then
+            local timeLeft = math.ceil(cooldown - (currentTime - lastUsed))
+            warn('Cooldown active. Wait ' .. timeLeft .. 's')
+            return
+        end
+
+        local awaken = player:FindFirstChild('Charge')
+        if not awaken then
+            return
+        end
+
+        if awaken.Value == 325 then
+            local message = nanamiPhrases[math.random(1, #nanamiPhrases)]
+            print('Sending:', message)
+
+            local ok, err = pcall(function()
+                channel:SendAsync(message)
+            end)
+
+            if not ok then
+                warn('Failed to send:', err)
+                return
+            end
+
+            lastUsed = currentTime -- Update the last used time to start cooldown
+        end
+    end
+end)
+
+
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "EvilTwinUI"
 screenGui.ResetOnSpawn = false
@@ -138,3 +190,4 @@ if player.Character then
     player.Character:GetAttributeChangedSignal('NANAMIAIM'):Connect(BLACKFLASH)
     task.defer(BLACKFLASH)
 end
+

@@ -1,0 +1,71 @@
+local player = game.Players.LocalPlayer
+local runService = game:GetService('RunService')
+
+local connection
+local alreadyFired = false
+
+local function BLACKFLASH()
+    local character = player.Character
+    if not character then
+        return
+    end
+
+    local enabled = character:GetAttribute('NANAMIAIM') == true
+
+    if connection then
+        connection:Disconnect()
+        connection = nil
+    end
+
+    if enabled then
+        alreadyFired = false
+        local liveFolder = workspace:FindFirstChild('Live')
+
+        connection = runService.PreRender:Connect(function()
+            if alreadyFired or not liveFolder then
+                return
+            end
+
+            for _, model in ipairs(liveFolder:GetChildren()) do
+                local hrp = model:FindFirstChild('HumanoidRootPart')
+                if not hrp then
+                    continue
+                end
+
+                local gui = hrp:FindFirstChild('NanamiCutGUI')
+                if not gui then
+                    continue
+                end
+
+                local mainBar = gui:FindFirstChild('MainBar')
+                if not mainBar then
+                    continue
+                end
+
+                local cutter = mainBar:FindFirstChild('Cutter')
+                local goal = mainBar:FindFirstChild('Goal')
+                if not cutter or not goal then
+                    continue
+                end
+
+                local delta =
+                    math.abs(cutter.Position.X.Scale - goal.Position.X.Scale)
+                if delta <= 0.005 then
+                    alreadyFired = true
+                    mouse1click()
+                    break
+                end
+            end
+        end)
+    end
+end
+
+player.CharacterAdded:Connect(function(char)
+    char:GetAttributeChangedSignal('NANAMIAIM'):Connect(BLACKFLASH)
+    task.defer(BLACKFLASH)
+end)
+
+if player.Character then
+    player.Character:GetAttributeChangedSignal('NANAMIAIM'):Connect(BLACKFLASH)
+    task.defer(BLACKFLASH)
+end
